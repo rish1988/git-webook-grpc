@@ -1,0 +1,20 @@
+syntax = 'proto3';
+
+option go_package = "/api";
+
+import "google/protobuf/empty.proto";
+
+service ClientSidePush {
+  rpc Notify(stream ProjectUpdateInfo) returns (google.protobuf.Empty) {}
+}
+
+service ServerSidePush {
+  rpc Notify(google.protobuf.Empty) returns (stream ProjectUpdateInfo) {}
+}
+
+message ProjectUpdateInfo {
+  string Project = 1;
+  string Branch = 2;
+  string SshUrl = 3;
+  string CommitId = 4;
+}
