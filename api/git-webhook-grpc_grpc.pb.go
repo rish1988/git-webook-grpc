@@ -11,7 +11,6 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
-	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -20,241 +19,122 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	ClientSidePush_Notify_FullMethodName = "/ClientSidePush/Notify"
+	WebHookSubscriber_Subscribe_FullMethodName = "/WebHookSubscriber/Subscribe"
 )
 
-// ClientSidePushClient is the client API for ClientSidePush service.
+// WebHookSubscriberClient is the client API for WebHookSubscriber service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type ClientSidePushClient interface {
-	Notify(ctx context.Context, opts ...grpc.CallOption) (ClientSidePush_NotifyClient, error)
+type WebHookSubscriberClient interface {
+	Subscribe(ctx context.Context, opts ...grpc.CallOption) (WebHookSubscriber_SubscribeClient, error)
 }
 
-type clientSidePushClient struct {
+type webHookSubscriberClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewClientSidePushClient(cc grpc.ClientConnInterface) ClientSidePushClient {
-	return &clientSidePushClient{cc}
+func NewWebHookSubscriberClient(cc grpc.ClientConnInterface) WebHookSubscriberClient {
+	return &webHookSubscriberClient{cc}
 }
 
-func (c *clientSidePushClient) Notify(ctx context.Context, opts ...grpc.CallOption) (ClientSidePush_NotifyClient, error) {
-	stream, err := c.cc.NewStream(ctx, &ClientSidePush_ServiceDesc.Streams[0], ClientSidePush_Notify_FullMethodName, opts...)
+func (c *webHookSubscriberClient) Subscribe(ctx context.Context, opts ...grpc.CallOption) (WebHookSubscriber_SubscribeClient, error) {
+	stream, err := c.cc.NewStream(ctx, &WebHookSubscriber_ServiceDesc.Streams[0], WebHookSubscriber_Subscribe_FullMethodName, opts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &clientSidePushNotifyClient{stream}
+	x := &webHookSubscriberSubscribeClient{stream}
 	return x, nil
 }
 
-type ClientSidePush_NotifyClient interface {
-	Send(*ProjectUpdateInfo) error
-	CloseAndRecv() (*emptypb.Empty, error)
+type WebHookSubscriber_SubscribeClient interface {
+	Send(*ProjectRequest) error
+	Recv() (*ProjectResponse, error)
 	grpc.ClientStream
 }
 
-type clientSidePushNotifyClient struct {
+type webHookSubscriberSubscribeClient struct {
 	grpc.ClientStream
 }
 
-func (x *clientSidePushNotifyClient) Send(m *ProjectUpdateInfo) error {
+func (x *webHookSubscriberSubscribeClient) Send(m *ProjectRequest) error {
 	return x.ClientStream.SendMsg(m)
 }
 
-func (x *clientSidePushNotifyClient) CloseAndRecv() (*emptypb.Empty, error) {
-	if err := x.ClientStream.CloseSend(); err != nil {
-		return nil, err
-	}
-	m := new(emptypb.Empty)
+func (x *webHookSubscriberSubscribeClient) Recv() (*ProjectResponse, error) {
+	m := new(ProjectResponse)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
 	return m, nil
 }
 
-// ClientSidePushServer is the server API for ClientSidePush service.
-// All implementations must embed UnimplementedClientSidePushServer
+// WebHookSubscriberServer is the server API for WebHookSubscriber service.
+// All implementations must embed UnimplementedWebHookSubscriberServer
 // for forward compatibility
-type ClientSidePushServer interface {
-	Notify(ClientSidePush_NotifyServer) error
-	mustEmbedUnimplementedClientSidePushServer()
+type WebHookSubscriberServer interface {
+	Subscribe(WebHookSubscriber_SubscribeServer) error
+	mustEmbedUnimplementedWebHookSubscriberServer()
 }
 
-// UnimplementedClientSidePushServer must be embedded to have forward compatible implementations.
-type UnimplementedClientSidePushServer struct {
+// UnimplementedWebHookSubscriberServer must be embedded to have forward compatible implementations.
+type UnimplementedWebHookSubscriberServer struct {
 }
 
-func (UnimplementedClientSidePushServer) Notify(ClientSidePush_NotifyServer) error {
-	return status.Errorf(codes.Unimplemented, "method Notify not implemented")
+func (UnimplementedWebHookSubscriberServer) Subscribe(WebHookSubscriber_SubscribeServer) error {
+	return status.Errorf(codes.Unimplemented, "method Subscribe not implemented")
 }
-func (UnimplementedClientSidePushServer) mustEmbedUnimplementedClientSidePushServer() {}
+func (UnimplementedWebHookSubscriberServer) mustEmbedUnimplementedWebHookSubscriberServer() {}
 
-// UnsafeClientSidePushServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to ClientSidePushServer will
+// UnsafeWebHookSubscriberServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to WebHookSubscriberServer will
 // result in compilation errors.
-type UnsafeClientSidePushServer interface {
-	mustEmbedUnimplementedClientSidePushServer()
+type UnsafeWebHookSubscriberServer interface {
+	mustEmbedUnimplementedWebHookSubscriberServer()
 }
 
-func RegisterClientSidePushServer(s grpc.ServiceRegistrar, srv ClientSidePushServer) {
-	s.RegisterService(&ClientSidePush_ServiceDesc, srv)
+func RegisterWebHookSubscriberServer(s grpc.ServiceRegistrar, srv WebHookSubscriberServer) {
+	s.RegisterService(&WebHookSubscriber_ServiceDesc, srv)
 }
 
-func _ClientSidePush_Notify_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(ClientSidePushServer).Notify(&clientSidePushNotifyServer{stream})
+func _WebHookSubscriber_Subscribe_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(WebHookSubscriberServer).Subscribe(&webHookSubscriberSubscribeServer{stream})
 }
 
-type ClientSidePush_NotifyServer interface {
-	SendAndClose(*emptypb.Empty) error
-	Recv() (*ProjectUpdateInfo, error)
+type WebHookSubscriber_SubscribeServer interface {
+	Send(*ProjectResponse) error
+	Recv() (*ProjectRequest, error)
 	grpc.ServerStream
 }
 
-type clientSidePushNotifyServer struct {
+type webHookSubscriberSubscribeServer struct {
 	grpc.ServerStream
 }
 
-func (x *clientSidePushNotifyServer) SendAndClose(m *emptypb.Empty) error {
+func (x *webHookSubscriberSubscribeServer) Send(m *ProjectResponse) error {
 	return x.ServerStream.SendMsg(m)
 }
 
-func (x *clientSidePushNotifyServer) Recv() (*ProjectUpdateInfo, error) {
-	m := new(ProjectUpdateInfo)
+func (x *webHookSubscriberSubscribeServer) Recv() (*ProjectRequest, error) {
+	m := new(ProjectRequest)
 	if err := x.ServerStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
 	return m, nil
 }
 
-// ClientSidePush_ServiceDesc is the grpc.ServiceDesc for ClientSidePush service.
+// WebHookSubscriber_ServiceDesc is the grpc.ServiceDesc for WebHookSubscriber service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var ClientSidePush_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "ClientSidePush",
-	HandlerType: (*ClientSidePushServer)(nil),
+var WebHookSubscriber_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "WebHookSubscriber",
+	HandlerType: (*WebHookSubscriberServer)(nil),
 	Methods:     []grpc.MethodDesc{},
 	Streams: []grpc.StreamDesc{
 		{
-			StreamName:    "Notify",
-			Handler:       _ClientSidePush_Notify_Handler,
-			ClientStreams: true,
-		},
-	},
-	Metadata: "api/git-webhook-grpc.proto",
-}
-
-const (
-	ServerSidePush_Notify_FullMethodName = "/ServerSidePush/Notify"
-)
-
-// ServerSidePushClient is the client API for ServerSidePush service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type ServerSidePushClient interface {
-	Notify(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (ServerSidePush_NotifyClient, error)
-}
-
-type serverSidePushClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewServerSidePushClient(cc grpc.ClientConnInterface) ServerSidePushClient {
-	return &serverSidePushClient{cc}
-}
-
-func (c *serverSidePushClient) Notify(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (ServerSidePush_NotifyClient, error) {
-	stream, err := c.cc.NewStream(ctx, &ServerSidePush_ServiceDesc.Streams[0], ServerSidePush_Notify_FullMethodName, opts...)
-	if err != nil {
-		return nil, err
-	}
-	x := &serverSidePushNotifyClient{stream}
-	if err := x.ClientStream.SendMsg(in); err != nil {
-		return nil, err
-	}
-	if err := x.ClientStream.CloseSend(); err != nil {
-		return nil, err
-	}
-	return x, nil
-}
-
-type ServerSidePush_NotifyClient interface {
-	Recv() (*ProjectUpdateInfo, error)
-	grpc.ClientStream
-}
-
-type serverSidePushNotifyClient struct {
-	grpc.ClientStream
-}
-
-func (x *serverSidePushNotifyClient) Recv() (*ProjectUpdateInfo, error) {
-	m := new(ProjectUpdateInfo)
-	if err := x.ClientStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
-}
-
-// ServerSidePushServer is the server API for ServerSidePush service.
-// All implementations must embed UnimplementedServerSidePushServer
-// for forward compatibility
-type ServerSidePushServer interface {
-	Notify(*emptypb.Empty, ServerSidePush_NotifyServer) error
-	mustEmbedUnimplementedServerSidePushServer()
-}
-
-// UnimplementedServerSidePushServer must be embedded to have forward compatible implementations.
-type UnimplementedServerSidePushServer struct {
-}
-
-func (UnimplementedServerSidePushServer) Notify(*emptypb.Empty, ServerSidePush_NotifyServer) error {
-	return status.Errorf(codes.Unimplemented, "method Notify not implemented")
-}
-func (UnimplementedServerSidePushServer) mustEmbedUnimplementedServerSidePushServer() {}
-
-// UnsafeServerSidePushServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to ServerSidePushServer will
-// result in compilation errors.
-type UnsafeServerSidePushServer interface {
-	mustEmbedUnimplementedServerSidePushServer()
-}
-
-func RegisterServerSidePushServer(s grpc.ServiceRegistrar, srv ServerSidePushServer) {
-	s.RegisterService(&ServerSidePush_ServiceDesc, srv)
-}
-
-func _ServerSidePush_Notify_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(emptypb.Empty)
-	if err := stream.RecvMsg(m); err != nil {
-		return err
-	}
-	return srv.(ServerSidePushServer).Notify(m, &serverSidePushNotifyServer{stream})
-}
-
-type ServerSidePush_NotifyServer interface {
-	Send(*ProjectUpdateInfo) error
-	grpc.ServerStream
-}
-
-type serverSidePushNotifyServer struct {
-	grpc.ServerStream
-}
-
-func (x *serverSidePushNotifyServer) Send(m *ProjectUpdateInfo) error {
-	return x.ServerStream.SendMsg(m)
-}
-
-// ServerSidePush_ServiceDesc is the grpc.ServiceDesc for ServerSidePush service.
-// It's only intended for direct use with grpc.RegisterService,
-// and not to be introspected or modified (even as a copy)
-var ServerSidePush_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "ServerSidePush",
-	HandlerType: (*ServerSidePushServer)(nil),
-	Methods:     []grpc.MethodDesc{},
-	Streams: []grpc.StreamDesc{
-		{
-			StreamName:    "Notify",
-			Handler:       _ServerSidePush_Notify_Handler,
+			StreamName:    "Subscribe",
+			Handler:       _WebHookSubscriber_Subscribe_Handler,
 			ServerStreams: true,
+			ClientStreams: true,
 		},
 	},
 	Metadata: "api/git-webhook-grpc.proto",

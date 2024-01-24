@@ -2,19 +2,35 @@ syntax = 'proto3';
 
 option go_package = "/api";
 
-import "google/protobuf/empty.proto";
-
-service ClientSidePush {
-  rpc Notify(stream ProjectUpdateInfo) returns (google.protobuf.Empty) {}
+service WebHookSubscriber {
+  rpc Subscribe(stream ProjectRequest) returns (stream ProjectResponse) {}
 }
 
-service ServerSidePush {
-  rpc Notify(google.protobuf.Empty) returns (stream ProjectUpdateInfo) {}
+message ProjectRequest {
+  repeated ProjectFilter projectFilter = 1;
 }
 
-message ProjectUpdateInfo {
+message ProjectResponse {
+  ProjectInfo projectInfo = 1;
+}
+
+message ProjectFilter {
+  ProjectInfo projectInfo = 1;
+  repeated string excludes = 2;
+  optional FilterOption filterOption = 3;
+}
+
+enum FilterOption {
+  None = 0;
+  Added = 1;
+  Modified = 2;
+  Deleted = 3;
+  All = 4;
+}
+
+message ProjectInfo {
   string Project = 1;
   string Branch = 2;
-  string SshUrl = 3;
-  string CommitId = 4;
+  optional string SshUrl = 3;
+  optional string CommitId = 4;
 }

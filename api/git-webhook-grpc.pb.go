@@ -9,7 +9,6 @@ package api
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
-	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	reflect "reflect"
 	sync "sync"
 )
@@ -21,19 +20,71 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-type ProjectUpdateInfo struct {
+type FilterOption int32
+
+const (
+	FilterOption_None     FilterOption = 0
+	FilterOption_Added    FilterOption = 1
+	FilterOption_Modified FilterOption = 2
+	FilterOption_Deleted  FilterOption = 3
+	FilterOption_All      FilterOption = 4
+)
+
+// Enum value maps for FilterOption.
+var (
+	FilterOption_name = map[int32]string{
+		0: "None",
+		1: "Added",
+		2: "Modified",
+		3: "Deleted",
+		4: "All",
+	}
+	FilterOption_value = map[string]int32{
+		"None":     0,
+		"Added":    1,
+		"Modified": 2,
+		"Deleted":  3,
+		"All":      4,
+	}
+)
+
+func (x FilterOption) Enum() *FilterOption {
+	p := new(FilterOption)
+	*p = x
+	return p
+}
+
+func (x FilterOption) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (FilterOption) Descriptor() protoreflect.EnumDescriptor {
+	return file_api_git_webhook_grpc_proto_enumTypes[0].Descriptor()
+}
+
+func (FilterOption) Type() protoreflect.EnumType {
+	return &file_api_git_webhook_grpc_proto_enumTypes[0]
+}
+
+func (x FilterOption) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use FilterOption.Descriptor instead.
+func (FilterOption) EnumDescriptor() ([]byte, []int) {
+	return file_api_git_webhook_grpc_proto_rawDescGZIP(), []int{0}
+}
+
+type ProjectRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Project  string `protobuf:"bytes,1,opt,name=Project,proto3" json:"Project,omitempty"`
-	Branch   string `protobuf:"bytes,2,opt,name=Branch,proto3" json:"Branch,omitempty"`
-	SshUrl   string `protobuf:"bytes,3,opt,name=SshUrl,proto3" json:"SshUrl,omitempty"`
-	CommitId string `protobuf:"bytes,4,opt,name=CommitId,proto3" json:"CommitId,omitempty"`
+	ProjectFilter []*ProjectFilter `protobuf:"bytes,1,rep,name=projectFilter,proto3" json:"projectFilter,omitempty"`
 }
 
-func (x *ProjectUpdateInfo) Reset() {
-	*x = ProjectUpdateInfo{}
+func (x *ProjectRequest) Reset() {
+	*x = ProjectRequest{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_api_git_webhook_grpc_proto_msgTypes[0]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -41,13 +92,13 @@ func (x *ProjectUpdateInfo) Reset() {
 	}
 }
 
-func (x *ProjectUpdateInfo) String() string {
+func (x *ProjectRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*ProjectUpdateInfo) ProtoMessage() {}
+func (*ProjectRequest) ProtoMessage() {}
 
-func (x *ProjectUpdateInfo) ProtoReflect() protoreflect.Message {
+func (x *ProjectRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_api_git_webhook_grpc_proto_msgTypes[0]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -59,35 +110,195 @@ func (x *ProjectUpdateInfo) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ProjectUpdateInfo.ProtoReflect.Descriptor instead.
-func (*ProjectUpdateInfo) Descriptor() ([]byte, []int) {
+// Deprecated: Use ProjectRequest.ProtoReflect.Descriptor instead.
+func (*ProjectRequest) Descriptor() ([]byte, []int) {
 	return file_api_git_webhook_grpc_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *ProjectUpdateInfo) GetProject() string {
+func (x *ProjectRequest) GetProjectFilter() []*ProjectFilter {
+	if x != nil {
+		return x.ProjectFilter
+	}
+	return nil
+}
+
+type ProjectResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	ProjectInfo *ProjectInfo `protobuf:"bytes,1,opt,name=projectInfo,proto3" json:"projectInfo,omitempty"`
+}
+
+func (x *ProjectResponse) Reset() {
+	*x = ProjectResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_api_git_webhook_grpc_proto_msgTypes[1]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *ProjectResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ProjectResponse) ProtoMessage() {}
+
+func (x *ProjectResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_api_git_webhook_grpc_proto_msgTypes[1]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ProjectResponse.ProtoReflect.Descriptor instead.
+func (*ProjectResponse) Descriptor() ([]byte, []int) {
+	return file_api_git_webhook_grpc_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *ProjectResponse) GetProjectInfo() *ProjectInfo {
+	if x != nil {
+		return x.ProjectInfo
+	}
+	return nil
+}
+
+type ProjectFilter struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	ProjectInfo  *ProjectInfo  `protobuf:"bytes,1,opt,name=projectInfo,proto3" json:"projectInfo,omitempty"`
+	Excludes     []string      `protobuf:"bytes,2,rep,name=excludes,proto3" json:"excludes,omitempty"`
+	FilterOption *FilterOption `protobuf:"varint,3,opt,name=filterOption,proto3,enum=FilterOption,oneof" json:"filterOption,omitempty"`
+}
+
+func (x *ProjectFilter) Reset() {
+	*x = ProjectFilter{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_api_git_webhook_grpc_proto_msgTypes[2]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *ProjectFilter) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ProjectFilter) ProtoMessage() {}
+
+func (x *ProjectFilter) ProtoReflect() protoreflect.Message {
+	mi := &file_api_git_webhook_grpc_proto_msgTypes[2]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ProjectFilter.ProtoReflect.Descriptor instead.
+func (*ProjectFilter) Descriptor() ([]byte, []int) {
+	return file_api_git_webhook_grpc_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *ProjectFilter) GetProjectInfo() *ProjectInfo {
+	if x != nil {
+		return x.ProjectInfo
+	}
+	return nil
+}
+
+func (x *ProjectFilter) GetExcludes() []string {
+	if x != nil {
+		return x.Excludes
+	}
+	return nil
+}
+
+func (x *ProjectFilter) GetFilterOption() FilterOption {
+	if x != nil && x.FilterOption != nil {
+		return *x.FilterOption
+	}
+	return FilterOption_None
+}
+
+type ProjectInfo struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Project  string  `protobuf:"bytes,1,opt,name=Project,proto3" json:"Project,omitempty"`
+	Branch   string  `protobuf:"bytes,2,opt,name=Branch,proto3" json:"Branch,omitempty"`
+	SshUrl   *string `protobuf:"bytes,3,opt,name=SshUrl,proto3,oneof" json:"SshUrl,omitempty"`
+	CommitId *string `protobuf:"bytes,4,opt,name=CommitId,proto3,oneof" json:"CommitId,omitempty"`
+}
+
+func (x *ProjectInfo) Reset() {
+	*x = ProjectInfo{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_api_git_webhook_grpc_proto_msgTypes[3]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *ProjectInfo) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ProjectInfo) ProtoMessage() {}
+
+func (x *ProjectInfo) ProtoReflect() protoreflect.Message {
+	mi := &file_api_git_webhook_grpc_proto_msgTypes[3]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ProjectInfo.ProtoReflect.Descriptor instead.
+func (*ProjectInfo) Descriptor() ([]byte, []int) {
+	return file_api_git_webhook_grpc_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *ProjectInfo) GetProject() string {
 	if x != nil {
 		return x.Project
 	}
 	return ""
 }
 
-func (x *ProjectUpdateInfo) GetBranch() string {
+func (x *ProjectInfo) GetBranch() string {
 	if x != nil {
 		return x.Branch
 	}
 	return ""
 }
 
-func (x *ProjectUpdateInfo) GetSshUrl() string {
-	if x != nil {
-		return x.SshUrl
+func (x *ProjectInfo) GetSshUrl() string {
+	if x != nil && x.SshUrl != nil {
+		return *x.SshUrl
 	}
 	return ""
 }
 
-func (x *ProjectUpdateInfo) GetCommitId() string {
-	if x != nil {
-		return x.CommitId
+func (x *ProjectInfo) GetCommitId() string {
+	if x != nil && x.CommitId != nil {
+		return *x.CommitId
 	}
 	return ""
 }
@@ -96,27 +307,46 @@ var File_api_git_webhook_grpc_proto protoreflect.FileDescriptor
 
 var file_api_git_webhook_grpc_proto_rawDesc = []byte{
 	0x0a, 0x1a, 0x61, 0x70, 0x69, 0x2f, 0x67, 0x69, 0x74, 0x2d, 0x77, 0x65, 0x62, 0x68, 0x6f, 0x6f,
-	0x6b, 0x2d, 0x67, 0x72, 0x70, 0x63, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1b, 0x67, 0x6f,
-	0x6f, 0x67, 0x6c, 0x65, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2f, 0x65, 0x6d,
-	0x70, 0x74, 0x79, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x79, 0x0a, 0x11, 0x50, 0x72, 0x6f,
-	0x6a, 0x65, 0x63, 0x74, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x49, 0x6e, 0x66, 0x6f, 0x12, 0x18,
+	0x6b, 0x2d, 0x67, 0x72, 0x70, 0x63, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x46, 0x0a, 0x0e,
+	0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x34,
+	0x0a, 0x0d, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x18,
+	0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x0e, 0x2e, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x46,
+	0x69, 0x6c, 0x74, 0x65, 0x72, 0x52, 0x0d, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x46, 0x69,
+	0x6c, 0x74, 0x65, 0x72, 0x22, 0x41, 0x0a, 0x0f, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x52,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x2e, 0x0a, 0x0b, 0x70, 0x72, 0x6f, 0x6a, 0x65,
+	0x63, 0x74, 0x49, 0x6e, 0x66, 0x6f, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0c, 0x2e, 0x50,
+	0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x0b, 0x70, 0x72, 0x6f, 0x6a,
+	0x65, 0x63, 0x74, 0x49, 0x6e, 0x66, 0x6f, 0x22, 0xa4, 0x01, 0x0a, 0x0d, 0x50, 0x72, 0x6f, 0x6a,
+	0x65, 0x63, 0x74, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x12, 0x2e, 0x0a, 0x0b, 0x70, 0x72, 0x6f,
+	0x6a, 0x65, 0x63, 0x74, 0x49, 0x6e, 0x66, 0x6f, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0c,
+	0x2e, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x0b, 0x70, 0x72,
+	0x6f, 0x6a, 0x65, 0x63, 0x74, 0x49, 0x6e, 0x66, 0x6f, 0x12, 0x1a, 0x0a, 0x08, 0x65, 0x78, 0x63,
+	0x6c, 0x75, 0x64, 0x65, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x09, 0x52, 0x08, 0x65, 0x78, 0x63,
+	0x6c, 0x75, 0x64, 0x65, 0x73, 0x12, 0x36, 0x0a, 0x0c, 0x66, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x4f,
+	0x70, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x0d, 0x2e, 0x46, 0x69,
+	0x6c, 0x74, 0x65, 0x72, 0x4f, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x48, 0x00, 0x52, 0x0c, 0x66, 0x69,
+	0x6c, 0x74, 0x65, 0x72, 0x4f, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x88, 0x01, 0x01, 0x42, 0x0f, 0x0a,
+	0x0d, 0x5f, 0x66, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x4f, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x95,
+	0x01, 0x0a, 0x0b, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x49, 0x6e, 0x66, 0x6f, 0x12, 0x18,
 	0x0a, 0x07, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52,
 	0x07, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x12, 0x16, 0x0a, 0x06, 0x42, 0x72, 0x61, 0x6e,
 	0x63, 0x68, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x42, 0x72, 0x61, 0x6e, 0x63, 0x68,
-	0x12, 0x16, 0x0a, 0x06, 0x53, 0x73, 0x68, 0x55, 0x72, 0x6c, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09,
-	0x52, 0x06, 0x53, 0x73, 0x68, 0x55, 0x72, 0x6c, 0x12, 0x1a, 0x0a, 0x08, 0x43, 0x6f, 0x6d, 0x6d,
-	0x69, 0x74, 0x49, 0x64, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x43, 0x6f, 0x6d, 0x6d,
-	0x69, 0x74, 0x49, 0x64, 0x32, 0x4a, 0x0a, 0x0e, 0x43, 0x6c, 0x69, 0x65, 0x6e, 0x74, 0x53, 0x69,
-	0x64, 0x65, 0x50, 0x75, 0x73, 0x68, 0x12, 0x38, 0x0a, 0x06, 0x4e, 0x6f, 0x74, 0x69, 0x66, 0x79,
-	0x12, 0x12, 0x2e, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65,
-	0x49, 0x6e, 0x66, 0x6f, 0x1a, 0x16, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72,
-	0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x45, 0x6d, 0x70, 0x74, 0x79, 0x22, 0x00, 0x28, 0x01,
-	0x32, 0x4a, 0x0a, 0x0e, 0x53, 0x65, 0x72, 0x76, 0x65, 0x72, 0x53, 0x69, 0x64, 0x65, 0x50, 0x75,
-	0x73, 0x68, 0x12, 0x38, 0x0a, 0x06, 0x4e, 0x6f, 0x74, 0x69, 0x66, 0x79, 0x12, 0x16, 0x2e, 0x67,
-	0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x45,
-	0x6d, 0x70, 0x74, 0x79, 0x1a, 0x12, 0x2e, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x55, 0x70,
-	0x64, 0x61, 0x74, 0x65, 0x49, 0x6e, 0x66, 0x6f, 0x22, 0x00, 0x30, 0x01, 0x42, 0x06, 0x5a, 0x04,
-	0x2f, 0x61, 0x70, 0x69, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x12, 0x1b, 0x0a, 0x06, 0x53, 0x73, 0x68, 0x55, 0x72, 0x6c, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09,
+	0x48, 0x00, 0x52, 0x06, 0x53, 0x73, 0x68, 0x55, 0x72, 0x6c, 0x88, 0x01, 0x01, 0x12, 0x1f, 0x0a,
+	0x08, 0x43, 0x6f, 0x6d, 0x6d, 0x69, 0x74, 0x49, 0x64, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x48,
+	0x01, 0x52, 0x08, 0x43, 0x6f, 0x6d, 0x6d, 0x69, 0x74, 0x49, 0x64, 0x88, 0x01, 0x01, 0x42, 0x09,
+	0x0a, 0x07, 0x5f, 0x53, 0x73, 0x68, 0x55, 0x72, 0x6c, 0x42, 0x0b, 0x0a, 0x09, 0x5f, 0x43, 0x6f,
+	0x6d, 0x6d, 0x69, 0x74, 0x49, 0x64, 0x2a, 0x47, 0x0a, 0x0c, 0x46, 0x69, 0x6c, 0x74, 0x65, 0x72,
+	0x4f, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x08, 0x0a, 0x04, 0x4e, 0x6f, 0x6e, 0x65, 0x10, 0x00,
+	0x12, 0x09, 0x0a, 0x05, 0x41, 0x64, 0x64, 0x65, 0x64, 0x10, 0x01, 0x12, 0x0c, 0x0a, 0x08, 0x4d,
+	0x6f, 0x64, 0x69, 0x66, 0x69, 0x65, 0x64, 0x10, 0x02, 0x12, 0x0b, 0x0a, 0x07, 0x44, 0x65, 0x6c,
+	0x65, 0x74, 0x65, 0x64, 0x10, 0x03, 0x12, 0x07, 0x0a, 0x03, 0x41, 0x6c, 0x6c, 0x10, 0x04, 0x32,
+	0x49, 0x0a, 0x11, 0x57, 0x65, 0x62, 0x48, 0x6f, 0x6f, 0x6b, 0x53, 0x75, 0x62, 0x73, 0x63, 0x72,
+	0x69, 0x62, 0x65, 0x72, 0x12, 0x34, 0x0a, 0x09, 0x53, 0x75, 0x62, 0x73, 0x63, 0x72, 0x69, 0x62,
+	0x65, 0x12, 0x0f, 0x2e, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65,
+	0x73, 0x74, 0x1a, 0x10, 0x2e, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x52, 0x65, 0x73, 0x70,
+	0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x28, 0x01, 0x30, 0x01, 0x42, 0x06, 0x5a, 0x04, 0x2f, 0x61,
+	0x70, 0x69, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -131,21 +361,27 @@ func file_api_git_webhook_grpc_proto_rawDescGZIP() []byte {
 	return file_api_git_webhook_grpc_proto_rawDescData
 }
 
-var file_api_git_webhook_grpc_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
+var file_api_git_webhook_grpc_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_api_git_webhook_grpc_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_api_git_webhook_grpc_proto_goTypes = []interface{}{
-	(*ProjectUpdateInfo)(nil), // 0: ProjectUpdateInfo
-	(*emptypb.Empty)(nil),     // 1: google.protobuf.Empty
+	(FilterOption)(0),       // 0: FilterOption
+	(*ProjectRequest)(nil),  // 1: ProjectRequest
+	(*ProjectResponse)(nil), // 2: ProjectResponse
+	(*ProjectFilter)(nil),   // 3: ProjectFilter
+	(*ProjectInfo)(nil),     // 4: ProjectInfo
 }
 var file_api_git_webhook_grpc_proto_depIdxs = []int32{
-	0, // 0: ClientSidePush.Notify:input_type -> ProjectUpdateInfo
-	1, // 1: ServerSidePush.Notify:input_type -> google.protobuf.Empty
-	1, // 2: ClientSidePush.Notify:output_type -> google.protobuf.Empty
-	0, // 3: ServerSidePush.Notify:output_type -> ProjectUpdateInfo
-	2, // [2:4] is the sub-list for method output_type
-	0, // [0:2] is the sub-list for method input_type
-	0, // [0:0] is the sub-list for extension type_name
-	0, // [0:0] is the sub-list for extension extendee
-	0, // [0:0] is the sub-list for field type_name
+	3, // 0: ProjectRequest.projectFilter:type_name -> ProjectFilter
+	4, // 1: ProjectResponse.projectInfo:type_name -> ProjectInfo
+	4, // 2: ProjectFilter.projectInfo:type_name -> ProjectInfo
+	0, // 3: ProjectFilter.filterOption:type_name -> FilterOption
+	1, // 4: WebHookSubscriber.Subscribe:input_type -> ProjectRequest
+	2, // 5: WebHookSubscriber.Subscribe:output_type -> ProjectResponse
+	5, // [5:6] is the sub-list for method output_type
+	4, // [4:5] is the sub-list for method input_type
+	4, // [4:4] is the sub-list for extension type_name
+	4, // [4:4] is the sub-list for extension extendee
+	0, // [0:4] is the sub-list for field type_name
 }
 
 func init() { file_api_git_webhook_grpc_proto_init() }
@@ -155,7 +391,43 @@ func file_api_git_webhook_grpc_proto_init() {
 	}
 	if !protoimpl.UnsafeEnabled {
 		file_api_git_webhook_grpc_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ProjectUpdateInfo); i {
+			switch v := v.(*ProjectRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_api_git_webhook_grpc_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ProjectResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_api_git_webhook_grpc_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ProjectFilter); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_api_git_webhook_grpc_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ProjectInfo); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -167,18 +439,21 @@ func file_api_git_webhook_grpc_proto_init() {
 			}
 		}
 	}
+	file_api_git_webhook_grpc_proto_msgTypes[2].OneofWrappers = []interface{}{}
+	file_api_git_webhook_grpc_proto_msgTypes[3].OneofWrappers = []interface{}{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_api_git_webhook_grpc_proto_rawDesc,
-			NumEnums:      0,
-			NumMessages:   1,
+			NumEnums:      1,
+			NumMessages:   4,
 			NumExtensions: 0,
-			NumServices:   2,
+			NumServices:   1,
 		},
 		GoTypes:           file_api_git_webhook_grpc_proto_goTypes,
 		DependencyIndexes: file_api_git_webhook_grpc_proto_depIdxs,
+		EnumInfos:         file_api_git_webhook_grpc_proto_enumTypes,
 		MessageInfos:      file_api_git_webhook_grpc_proto_msgTypes,
 	}.Build()
 	File_api_git_webhook_grpc_proto = out.File
