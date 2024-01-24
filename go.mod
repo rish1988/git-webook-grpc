@@ -1,6 +1,6 @@
 module github.com/rish1988/git-webook-grpc
 
-go 1.21.5
+go 1.21.6
 
 require (
 	google.golang.org/grpc v1.61.0
