@@ -7,17 +7,12 @@ service WebHookSubscriber {
 }
 
 message ProjectRequest {
-  repeated ProjectFilter projectFilter = 1;
+  ProjectInfo projectInfo = 1;
+  optional FilterOption filterOption = 2;
 }
 
 message ProjectResponse {
-  ProjectInfo projectInfo = 1;
-}
-
-message ProjectFilter {
-  ProjectInfo projectInfo = 1;
-  repeated string excludes = 2;
-  optional FilterOption filterOption = 3;
+  ProjectUpdateInfo projectInfo = 1;
 }
 
 enum FilterOption {
@@ -29,8 +24,33 @@ enum FilterOption {
 }
 
 message ProjectInfo {
-  string Project = 1;
-  string Branch = 2;
-  optional string SshUrl = 3;
-  optional string CommitId = 4;
+  string name = 1;
+  string branch = 2;
+  optional string sshUrl = 3;
+}
+
+message ProjectUpdateInfo {
+  ProjectInfo project = 1;
+  repeated Commit commits = 2;
+}
+
+message Commit {
+  string hash = 1;
+  optional string message = 2;
+  optional Timestamp timestamp = 3;
+  optional CommitUser commitUser = 4;
+  repeated string added = 5;
+  repeated string modified = 6;
+  repeated string removed = 7;
+}
+
+message CommitUser {
+  string name = 1;
+  string email = 2;
+  optional string username = 3;
+}
+
+message Timestamp {
+  int64 seconds = 1;
+  int32 nanos = 2;
 }
