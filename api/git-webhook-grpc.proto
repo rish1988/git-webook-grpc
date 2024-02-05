@@ -1,56 +1,72 @@
+
 syntax = 'proto3';
 
 option go_package = "/api";
 
+// WebHookSubscriber service defines the RPC methods for subscribing to project updates.
+// It allows clients to subscribe and receive updates for projects in real-time.
 service WebHookSubscriber {
+  // Subscribe establishes a bidirectional stream between the client and server.
+  // Clients send a stream of ProjectRequest messages to specify which projects they want to subscribe to,
+  // and in response, they receive a stream of ProjectResponse messages with the updates.
   rpc Subscribe(stream ProjectRequest) returns (stream ProjectResponse) {}
 }
 
+// ProjectRequest represents a request from the client to subscribe to updates for a specific project.
+// It includes information about the project and optional filter options to customize the subscription.
 message ProjectRequest {
-  ProjectInfo projectInfo = 1;
-  optional FilterOption filterOption = 2;
+  ProjectInfo projectInfo = 1; // Basic information about the project to subscribe to.
+  optional FilterOption filterOption = 2; // Filter for the types of updates the client is interested in.
 }
 
+// ProjectResponse contains updates about the project.
+// Each response corresponds to updates that match the subscription criteria.
 message ProjectResponse {
-  ProjectUpdateInfo projectInfo = 1;
+  ProjectUpdateInfo projectInfo = 1; // Information about the project update.
 }
 
+// FilterOption enumerates the types of updates that a client can subscribe to.
 enum FilterOption {
-  None = 0;
-  Added = 1;
-  Modified = 2;
-  Deleted = 3;
-  All = 4;
+  None = 0; // No filter, subscribe to all updates.
+  Added = 1; // Subscribe only to added resources.
+  Modified = 2; // Subscribe only to modified resources.
+  Deleted = 3; // Subscribe only to deleted resources.
+  All = 4; // Subscribe to added, modified, and deleted resources.
 }
 
+// ProjectInfo provides basic information about a project.
 message ProjectInfo {
-  string name = 1;
-  string branch = 2;
-  optional string sshUrl = 3;
+  string name = 1; // The name of the project.
+  string branch = 2; // The specific branch of the project to track.
+  optional string sshUrl = 3; // The SSH URL to access the project repository.
 }
 
+// ProjectUpdateInfo contains detailed information about an update to a project.
 message ProjectUpdateInfo {
-  ProjectInfo project = 1;
-  repeated Commit commits = 2;
+  ProjectInfo project = 1; // The project that was updated.
+  repeated Commit commits = 2; // A list of commits that were part of the update.
 }
 
+// Commit represents a single commit in a project, including its details.
 message Commit {
-  string hash = 1;
-  optional string message = 2;
-  optional Timestamp timestamp = 3;
-  optional CommitUser commitUser = 4;
-  repeated string added = 5;
-  repeated string modified = 6;
-  repeated string removed = 7;
+  string hash = 1; // The hash identifier of the commit.
+  optional string message = 2; // The commit message.
+  optional Timestamp timestamp = 3; // The timestamp when the commit was made.
+  optional CommitUser commitUser = 4; // Information about the user who made the commit.
+  repeated string added = 5; // Files added in this commit.
+  repeated string modified = 6; // Files modified in this commit.
+  repeated string removed = 7; // Files removed in this commit.
 }
 
+// CommitUser provides information about the user who made a commit.
 message CommitUser {
-  string name = 1;
-  string email = 2;
-  optional string username = 3;
+  string name = 1; // The name of the user.
+  string email = 2; // The email of the user.
+  optional string username = 3; // The username of the user.
 }
 
+// Timestamp represents a point in time, with precision up to nanoseconds.
 message Timestamp {
-  int64 seconds = 1;
-  int32 nanos = 2;
+  int64 seconds = 1; // The time elapsed in seconds since the Unix epoch.
+  int32 nanos = 2; // Additional nanoseconds, adding to the seconds field.
 }
